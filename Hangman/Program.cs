@@ -10,10 +10,25 @@ namespace Hangman
 {
     class Program
     {
+        static string apikey = string.Empty;
         static void Main(string[] args)
         {
-            //getting word
+            Console.WriteLine("CLI HANGMAN - Daniel Binoy");
+            string url1 = @"https://random-word-api.herokuapp.com/key?";
 
+            HttpWebRequest apirequest = (HttpWebRequest)WebRequest.Create(url1);
+
+
+            apirequest.AutomaticDecompression = DecompressionMethods.GZip;
+            using (HttpWebResponse response = (HttpWebResponse)apirequest.GetResponse())
+            using (Stream stream = response.GetResponseStream())
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                apikey = reader.ReadToEnd();
+            }
+
+        StartProgram:
+            Console.Clear();
             Console.WriteLine("getting word...");
             string word = getWord();
             Console.WriteLine("Got word!");
@@ -27,7 +42,7 @@ namespace Hangman
             Console.WriteLine(guessword);
          
             Console.WriteLine("Enter difficulty level(1-20)");
-            triesleft -= Convert.ToInt32(Console.ReadLine());
+             triesleft -= Convert.ToInt32(Console.ReadLine());
             while (!word.Equals(guessword) && triesleft>0) {
                 Console.WriteLine("Input a guess letter");
                 bool yessir = false;
@@ -52,23 +67,47 @@ namespace Hangman
             if (word.Equals(guessword))
             {
                 Console.WriteLine($"Correct! The word was {guessword}");
+                Console.WriteLine("Play again? (Y/N)");
+                string response = Console.ReadLine();
+                if (response.Equals("Y") || response.Equals("y") || response.Equals("yes"))
+                {
+                    goto StartProgram;
+                }
+                else
+                {
+                    System.Environment.Exit(0);
+                }
             }
             else
             {
                 Console.WriteLine("You lose!");
                 Console.WriteLine($"The word was: {word}");
+                Console.WriteLine("Play again? (Y/N)");
+                string response = Console.ReadLine();
+                if (response.Equals("Y") || response.Equals("y") || response.Equals("yes"))
+                {
+                    goto StartProgram;
+                }
+                else
+                {
+                    System.Environment.Exit(0);
+                }
             }
             Console.ReadLine();
         }
-
         static string getWord()
         {
+            //
+           
+
+
             string html = string.Empty;
-            string url = @"https://random-word-api.herokuapp.com/word?key=40C4WCYZ&number=1";
+            string url = @"https://random-word-api.herokuapp.com/word?key="+apikey+"&number=1";
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            request.AutomaticDecompression = DecompressionMethods.GZip;
 
+
+            request.AutomaticDecompression = DecompressionMethods.GZip;
             using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
             using (Stream stream = response.GetResponseStream())
             using (StreamReader reader = new StreamReader(stream))
@@ -78,11 +117,7 @@ namespace Hangman
             string ret;
             char[] removeThese = { '"', '"', '[', ']' };
             ret = html.Trim(removeThese);
-
-
             return ret;
-
-
         }
     }
 }
