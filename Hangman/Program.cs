@@ -13,11 +13,12 @@ namespace Hangman
         static string apikey = string.Empty;
         static void Main(string[] args)
         {
+            
             Console.WriteLine("CLI HANGMAN - Daniel Binoy");
             string url1 = @"https://random-word-api.herokuapp.com/key?";
 
             HttpWebRequest apirequest = (HttpWebRequest)WebRequest.Create(url1);
-
+            List<string> wrongletters;
 
             apirequest.AutomaticDecompression = DecompressionMethods.GZip;
             using (HttpWebResponse response = (HttpWebResponse)apirequest.GetResponse())
@@ -28,6 +29,7 @@ namespace Hangman
             }
 
         StartProgram:
+            wrongletters = new List<string>();
             Console.Clear();
             Console.WriteLine("getting word...");
             string word = getWord();
@@ -39,11 +41,15 @@ namespace Hangman
             {
                 guessword += "_";
             }
-            Console.WriteLine(guessword);
-         
+            printCurrentGuess(guessword,triesleft,wrongletters);
+
             Console.WriteLine("Enter difficulty level(1-20)");
              triesleft -= Convert.ToInt32(Console.ReadLine());
             while (!word.Equals(guessword) && triesleft>0) {
+                Console.Clear();
+
+                printCurrentGuess(guessword,triesleft,wrongletters);
+
                 Console.WriteLine("Input a guess letter");
                 bool yessir = false;
                 string guessletter = Console.ReadLine();
@@ -60,13 +66,14 @@ namespace Hangman
                 if (!yessir)
                 {
                     triesleft--;
+                    wrongletters.Add(guessletter);
                     Console.WriteLine($"WRONG. Tries Left: {triesleft}");
                 }
-                Console.WriteLine(guessword);
+                
             }
             if (word.Equals(guessword))
             {
-                Console.WriteLine($"Correct! The word was {guessword}");
+                Console.WriteLine($"Correct! The word was {word}");
                 Console.WriteLine("Play again? (Y/N)");
                 string response = Console.ReadLine();
                 if (response.Equals("Y") || response.Equals("y") || response.Equals("yes"))
@@ -118,6 +125,21 @@ namespace Hangman
             char[] removeThese = { '"', '"', '[', ']' };
             ret = html.Trim(removeThese);
             return ret;
+        }
+        static void printCurrentGuess(string guessxd,int triesleftxd, List<string> wronglettersxd)
+        {
+            string output = "";
+            for(int i = 0; i < guessxd.Length; i++)
+            {
+                output += (guessxd[i] + " ");
+            }
+
+            output += "                                    WRONG LETTERS: {";
+            output += string.Join(", ", wronglettersxd);
+            output+="}                 TRIES LEFT: ";
+
+            output += triesleftxd;
+            Console.WriteLine(output);
         }
     }
 }
