@@ -41,8 +41,9 @@ namespace Hangman
             {
                 guessword += "_";
             }
+            Console.Clear();
             printCurrentGuess(guessword,triesleft,wrongletters);
-
+            
             Console.WriteLine("Enter difficulty level(1-20)");
              triesleft -= Convert.ToInt32(Console.ReadLine());
             while (!word.Equals(guessword) && triesleft>0) {
@@ -104,10 +105,6 @@ namespace Hangman
         }
         static string getWord()
         {
-            //
-           
-
-
             string html = string.Empty;
             string url = @"https://random-word-api.herokuapp.com/word?key="+apikey+"&number=1";
 
@@ -134,11 +131,12 @@ namespace Hangman
                 output += (guessxd[i] + " ");
             }
 
-            output += "                                    WRONG LETTERS: {";
+            output += "                                    \n\nWRONG LETTERS: {";
             output += string.Join(", ", wronglettersxd);
-            output+="}                 TRIES LEFT: ";
+            output+="}                 \n\nTRIES LEFT: ";
 
             output += triesleftxd;
+            output += "\n\n";
             Console.WriteLine(output);
         }
     }
